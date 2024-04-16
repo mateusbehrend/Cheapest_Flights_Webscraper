@@ -52,18 +52,18 @@ def find_cheapest_flights(flight_info):
     trip_leave_date = flight_info['Date_leaving']
 
     driver.get('https://www.expedia.com/');
-    time.sleep(1) 
+    time.sleep(.5) 
 
     #click on flights
     flight_xpath = '//a[@aria-controls="search_form_product_selector_flights"]'
     flight_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, flight_xpath)))
     flight_element.click()
-    time.sleep(1)
+    time.sleep(.5)
 
     #click on roundtrip
     roundtrip_xpath = '//a[@aria-controls="FlightSearchForm_ROUND_TRIP"]'
     roundtrip_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, roundtrip_xpath)))
-    time.sleep(1)
+    time.sleep(.5)
 
     """ fill out form for departure """
     #click on leaving from
@@ -79,7 +79,7 @@ def find_cheapest_flights(flight_info):
     #leaving_from_text_element.send_keys(leaving_from)
     for i in range(len(leaving_from)):
         leaving_from_text_element.send_keys(leaving_from[i])
-        time.sleep(.1)
+        time.sleep(.05)
     time.sleep(1)
     leaving_from_text_element.send_keys(Keys.DOWN,Keys.RETURN)
     time.sleep(1)
@@ -94,7 +94,7 @@ def find_cheapest_flights(flight_info):
     time.sleep(1)
     for i in range(len(going_to)):
         leaving_from_text_element.send_keys(going_to[i])
-        time.sleep(.1)
+        time.sleep(.05)
     time.sleep(1)
     leaving_from_text_element.send_keys(Keys.DOWN, Keys.RETURN)
     time.sleep(1)
@@ -103,7 +103,7 @@ def find_cheapest_flights(flight_info):
     date_xpath = '//button[@data-stid="uitk-date-selector-input1-default"]'
     departing_date_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, date_xpath)))
     departing_date_element.click()
-    time.sleep(1)
+    time.sleep(.5)
 
     #trip_date_xpath = '//div[contains(@aria-label, "{}")]../..'.format(trip_leave_date)
     trip_date_xpath = '//div[contains(@aria-label, "{}")]/..'.format(trip_leave_date)
