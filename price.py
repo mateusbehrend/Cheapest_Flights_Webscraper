@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+#Apr 16, 2024 version of expedia
 
-
-# print(get_price())
+# import needed libraries
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -20,10 +20,10 @@ from email.message import EmailMessage
 import schedule
 
 flight_inputs = {
-    'Departure': "Los Angeles", 
-    'Destination': "Santorini",
-    'Date_leaving': "April 25, 2024",
-    'Date_returning': "September 20, 2024"
+    'Departure': "LAX", 
+    'Destination': "ABQ",
+    'Date_leaving': "May 5, 2024",
+    'Date_returning': "May 15, 2024"
 }
 
 def find_cheapest_flights(flight_info):
@@ -50,6 +50,7 @@ def find_cheapest_flights(flight_info):
     leaving_from = flight_info['Departure']
     going_to = flight_info['Destination']
     trip_leave_date = flight_info['Date_leaving']
+    trip_date_return = flight_info['Date_returning']
 
     driver.get('https://www.expedia.com/');
     time.sleep(.5) 
@@ -100,42 +101,58 @@ def find_cheapest_flights(flight_info):
     time.sleep(1)
 
     """ get the appropriate dates of the flights """
+
+    """ click on the departing date"""
     date_xpath = '//button[@data-stid="uitk-date-selector-input1-default"]'
-    departing_date_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, date_xpath)))
-    departing_date_element.click()
+    calender_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, date_xpath)))
+    calender_element.click()
     time.sleep(.5)
 
-    #trip_date_xpath = '//div[contains(@aria-label, "{}")]../..'.format(trip_leave_date)
     trip_date_xpath = '//div[contains(@aria-label, "{}")]/..'.format(trip_leave_date)
-    print(trip_date_xpath)
-    departing_date_element = WebDriverWait(driver,3).until(EC.presence_of_element_located((By.XPATH, trip_date_xpath)))
-    print(departing_date_element.text)
-    print(departing_date_element.tag_name)
-    print(departing_date_element)
-    #element = WebDriverWait(driver,3).until(EC.presence_of_element_located("//button[contains(@aria-label, 'April 30, 2024')"))
-    departing_date_element.click()
-    # departing_date_element = ""
-    # while departing_date_element == "":
-    #     try:
-    #         departing_date_element = WebDriverWait(driver,3).until(
-    #         EC.presence_of_element_located((By.XPATH, trip_date_xpath))
-    #         )
-    #         departing_date_element.click() #Click on the departure date
-    #     except TimeoutException:
-    #        departing_date_element=""
-    #        next_month_xpath = '//button[@data-stid="date-selector-paging"][2]'
-    #        driver.find_element(By.XPATH, next_month_xpath).click()
-    #        time.sleep(1)
+
+    departing_date_element = ""
+    while departing_date_element == "":
+        try:
+            departing_date_element = WebDriverWait(driver,3).until(EC.presence_of_element_located((By.XPATH, trip_date_xpath)))
+            departing_date_element.click() #Click on the departure date
+        except TimeoutException:
+           departing_date_element= ""
+           next_month_xpath = '//button[@data-stid="uitk-calendar-navigation-controls-next-button"]'
+           next_month_element = WebDriverWait(driver,2).until(EC.presence_of_element_located((By.XPATH, next_month_xpath)))
+           next_month_element.click()
+           time.sleep(1)
     
-    # #depart_date_done_xpath = '//button[@data-stid="apply-date-picker"]'
-    # driver.find_element(By.XPATH, '//button[@data-stid="apply-date-selector"]').click()
+    """click on return date"""
+    return_trip_date_xpath = '//div[contains(@aria-label, "{}")]/..'.format(trip_date_return)
+    return_date_element = ""
+    while return_date_element == "":
+        try:
+            return_date_element = WebDriverWait(driver,3).until(EC.presence_of_element_located((By.XPATH, return_trip_date_xpath)))
+            return_date_element.click() #Click on the return date
+        except TimeoutException:
+           return_date_element= ""
+           next_month_xpath = '//button[@data-stid="uitk-calendar-navigation-controls-next-button"]'
+           next_month_element = WebDriverWait(driver,3).until(EC.presence_of_element_located((By.XPATH, next_month_xpath)))
+           next_month_element.click()
+           time.sleep(1)
     
-    departing_date_element.send_keys(Keys.ESCAPE)
+    #exit out of the calender and return to the home page
+    calender_element.send_keys(Keys.ESCAPE)
 
     """ click on finding flights"""
     search_flights_xpath = '//button[@id="search_button"]'
     search_flights_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, search_flights_xpath)))
     search_flights_element.click()
-    time.sleep(60)
+    time.sleep(15)
+
+    """ sort the flights by lowest price"""
+    nonstop_flights_xpath = '//input[@name="NUM_OF_STOPS"]'
+    nonstop_flights_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, nonstop_flights_xpath)))
+    if len(driver.find_elements(By.XPATH,nonstop_flights_xpath)) > 0:
+        print("found nonstop flights")
+        nonstop_flights_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, nonstop_flights_xpath)))
+        nonstop_flights_element.click()
+        time.sleep(1)
+    time.sleep(1)
 
 find_cheapest_flights(flight_inputs)
