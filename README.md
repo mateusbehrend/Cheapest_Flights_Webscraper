@@ -1,1 +1,1 @@
-Given any set of dates and departure/arrival locations, this script automates scraping the cheapest flights from Expedia. It then emails a Pandas DataFrame with the results.
+This script automates the cheapest flight options from Expedia, given a set of dates and departure/arrival locations. It formats the results into a Pandas DataFrame and delivers them via email.
